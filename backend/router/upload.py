@@ -142,6 +142,7 @@ async def upload_excel(
             performance=s.performance,
             homework=s.homework,
             keywords=s.keywords,
+            extra_info=s.extra_info,
         )
         db.add(student)
 

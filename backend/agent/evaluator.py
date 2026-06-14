@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import re
 
 import httpx
@@ -54,6 +55,7 @@ class EvaluationService:
         performance: str | None = None,
         homework: str | None = None,
         keywords: str | None = None,
+        extra_info: str | None = None,
         style: str = "encourage",
         custom_prompt: str | None = None,
         word_count: str = "100-150",
@@ -65,10 +67,23 @@ class EvaluationService:
         if custom_prompt:
             style_desc = f"{style_desc}，{custom_prompt}"
 
-        score_str = score if score else "未知"
         performance_str = performance or None
         homework_str = homework or None
         keywords_str = keywords or None
+
+        # Parse extra_info for multi-subject scores
+        subjects_data: dict[str, dict[str, str]] = {}
+        remark: str | None = None
+        if extra_info:
+            try:
+                parsed = json.loads(extra_info)
+                if isinstance(parsed, dict):
+                    subjects_data = parsed.get("subjects", {}) or {}
+                    remark = parsed.get("备注")
+            except (json.JSONDecodeError, TypeError):
+                pass
+
+        score_str = score if score else ("见各科成绩明细" if subjects_data else "未知")
 
         extra_lines = []
         if performance_str:
@@ -77,11 +92,22 @@ class EvaluationService:
             extra_lines.append(f"- 作业情况：{homework_str}")
         if keywords_str:
             extra_lines.append(f"- 学生特点：{keywords_str}")
+
+        if subjects_data:
+            subj_lines = []
+            for subject, scores in subjects_data.items():
+                score_parts = [f"{stype}{sval}" for stype, sval in scores.items()]
+                subj_lines.append(f"  - {subject}：{'，'.join(score_parts)}")
+            extra_lines.append("- 各科成绩：\n" + "\n".join(subj_lines))
+
+        if remark:
+            extra_lines.append(f"- 备注：{remark}")
+
         extra = "\n".join(extra_lines)
 
         extra_requirements = ""
         if extra_lines:
-            extra_requirements = "2. 结合学生的具体表现来佐证评价"
+            extra_requirements = "2. 结合学生的具体表现和各科成绩来佐证评价"
         else:
             extra_requirements = "2. 根据学生的成绩给出有针对性的评价"
 

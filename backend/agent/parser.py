@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+import re
 from pathlib import Path
 from typing import Union
 
@@ -35,6 +37,10 @@ COLUMN_ALIASES = {
     "关键字": "关键词",
 }
 
+# Pattern: {subject}考试成绩 / {subject}平时成绩 / {subject}总评成绩
+SUBJECT_SCORE_RE = re.compile(r"^(.+?)(考试成绩|平时成绩|总评成绩)$")
+SCORE_TYPE_MAP = {"考试成绩": "考试", "平时成绩": "平时", "总评成绩": "总评"}
+
 
 class ExcelParseError(Exception):
     pass
@@ -56,9 +62,28 @@ class ExcelParser:
         df = ExcelParser._normalize_columns(df)
         ExcelParser._validate_columns(df)
 
+        # Detect subject score columns & remarks
+        subject_cols = ExcelParser._detect_subject_columns(df)
+        has_remark = "备注" in df.columns
+
         df = df.where(pd.notna(df), None)
         students = []
         for _, row in df.iterrows():
+            extra = {}
+            subjects = {}
+            for subject, types in subject_cols.items():
+                scores = {}
+                for col_key, col_name in types.items():
+                    val = row.get(col_name)
+                    if val is not None:
+                        scores[SCORE_TYPE_MAP.get(col_key, col_key)] = str(val).strip()
+                if scores:
+                    subjects[subject] = scores
+            if subjects:
+                extra["subjects"] = subjects
+            if has_remark and row.get("备注") is not None:
+                extra["备注"] = str(row["备注"]).strip()
+
             students.append(
                 StudentData(
                     name=str(row["姓名"]).strip(),
@@ -66,6 +91,7 @@ class ExcelParser:
                     performance=str(row["课堂表现"]).strip() if row.get("课堂表现") is not None else None,
                     homework=str(row["作业情况"]).strip() if row.get("作业情况") is not None else None,
                     keywords=str(row["关键词"]).strip() if row.get("关键词") is not None else None,
+                    extra_info=json.dumps(extra, ensure_ascii=False) if extra else None,
                 )
             )
 
@@ -84,9 +110,28 @@ class ExcelParser:
         df = ExcelParser._normalize_columns(df)
         ExcelParser._validate_columns(df)
 
+        # Detect subject score columns & remarks
+        subject_cols = ExcelParser._detect_subject_columns(df)
+        has_remark = "备注" in df.columns
+
         df = df.where(pd.notna(df), None)
         students = []
         for _, row in df.iterrows():
+            extra = {}
+            subjects = {}
+            for subject, types in subject_cols.items():
+                scores = {}
+                for col_key, col_name in types.items():
+                    val = row.get(col_name)
+                    if val is not None:
+                        scores[SCORE_TYPE_MAP.get(col_key, col_key)] = str(val).strip()
+                if scores:
+                    subjects[subject] = scores
+            if subjects:
+                extra["subjects"] = subjects
+            if has_remark and row.get("备注") is not None:
+                extra["备注"] = str(row["备注"]).strip()
+
             students.append(
                 StudentData(
                     name=str(row["姓名"]).strip(),
@@ -94,6 +139,7 @@ class ExcelParser:
                     performance=str(row["课堂表现"]).strip() if row.get("课堂表现") is not None else None,
                     homework=str(row["作业情况"]).strip() if row.get("作业情况") is not None else None,
                     keywords=str(row["关键词"]).strip() if row.get("关键词") is not None else None,
+                    extra_info=json.dumps(extra, ensure_ascii=False) if extra else None,
                 )
             )
 
@@ -116,3 +162,20 @@ class ExcelParser:
                 f"缺少必要列: {', '.join(missing)}。"
                 f"需要的列: {', '.join(REQUIRED_COLUMNS)}"
             )
+
+    @staticmethod
+    def _detect_subject_columns(df: pd.DataFrame) -> dict[str, dict[str, str]]:
+        """Detect columns matching {subject}考试成绩/平时成绩/总评成绩 pattern.
+        Returns: {subject: {type_key: original_column_name, ...}, ...}
+        """
+        subjects: dict[str, dict[str, str]] = {}
+        for col in df.columns:
+            col_str = str(col).strip()
+            m = SUBJECT_SCORE_RE.match(col_str)
+            if m:
+                subject = m.group(1).strip()
+                score_type = m.group(2).strip()
+                if subject not in subjects:
+                    subjects[subject] = {}
+                subjects[subject][score_type] = col_str
+        return subjects

@@ -2,12 +2,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const pagePath = window.location.pathname;
 
   // ============ Upload Page ============
-  if (pagePath === "/") {
+  if (pagePath === "/" || pagePath === "/teacher/") {
     initUploadPage();
   }
 
   // ============ Generate Page ============
-  if (pagePath.startsWith("/generate/")) {
+  if (pagePath.startsWith("/generate/") || pagePath.startsWith("/teacher/generate/")) {
     initGeneratePage();
   }
 
@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
       submitBtn.innerHTML = '<span class="spinner"></span> 上传中...';
 
       try {
-        const resp = await fetch("/api/v1/upload-excel", {
+        const resp = await fetch("/teacher/api/v1/upload-excel", {
           method: "POST",
           body: formData,
         });
@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       const generateBtn = document.getElementById("generateBtn");
-      generateBtn.href = "/generate/" + data.class_id;
+      generateBtn.href = "/teacher/generate/" + data.class_id;
 
       previewSection.classList.remove("hidden");
       previewSection.scrollIntoView({ behavior: "smooth" });
@@ -173,7 +173,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const wordCount = document.getElementById("wordCount").value;
 
       try {
-        const resp = await fetch("/api/v1/generate", {
+        const resp = await fetch("/teacher/api/v1/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -209,7 +209,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!taskId) return;
 
       try {
-        const resp = await fetch("/api/v1/generate/" + taskId);
+        const resp = await fetch("/teacher/api/v1/generate/" + taskId);
         if (!resp.ok) throw new Error("查询状态失败");
 
         const data = await resp.json();
@@ -276,7 +276,7 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("modalContent").value = content;
 
       // Check sensitive words
-      fetch("/api/v1/classes/" + classId + "/evaluations")
+      fetch("/teacher/api/v1/classes/" + classId + "/evaluations")
         .then((r) => r.json())
         .then((data) => {
           const student = data.students.find((s) => s.student_id === studentId);
@@ -324,7 +324,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       try {
         // 1. Get eval_id from DB
-        const resp = await fetch("/api/v1/classes/" + classId + "/evaluations");
+        const resp = await fetch("/teacher/api/v1/classes/" + classId + "/evaluations");
         const data = await resp.json();
         const student = data.students.find(
           (s) => s.student_id === currentEditStudentId
@@ -356,7 +356,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function refreshResultsFromDb() {
       try {
-        const resp = await fetch("/api/v1/classes/" + classId + "/evaluations");
+        const resp = await fetch("/teacher/api/v1/classes/" + classId + "/evaluations");
         const data = await resp.json();
         renderResultsTable(data.students);
       } catch (err) {
@@ -408,7 +408,7 @@ document.addEventListener("DOMContentLoaded", function () {
         exportBtn.disabled = true;
         exportBtn.textContent = "导出中...";
 
-        const resp = await fetch("/api/v1/export-excel", {
+        const resp = await fetch("/teacher/api/v1/export-excel", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ class_id: parseInt(classId) }),

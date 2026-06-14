@@ -25,7 +25,7 @@
                 <p class="file-hint">仅「姓名」为必填，其他列可选。成绩支持分数（95）或等级（优秀/良好/A/B）；也可用「分数」「等级」「上课表现」等列名 — 系统会自动识别</p>
             </div>
             <div class="template-download">
-                <a href="/api/v1/template" class="btn-template">📄 下载 Excel 模板</a>
+                <a href="/teacher/api/v1/template" class="btn-template">📄 下载 Excel 模板</a>
             </div>
             <div class="file-dropzone" id="dropzone">
                 <p>拖拽文件到此处，或点击选择文件</p>
@@ -65,7 +65,7 @@
         </table>
     </div>
     <div class="form-actions">
-        <a href="/generate/{{ class_id }}" class="btn btn-primary" id="generateBtn">
+        <a href="/teacher/generate/{{ class_id }}" class="btn btn-primary" id="generateBtn">
             下一步：生成评语 →
         </a>
     </div>

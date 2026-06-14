@@ -14,9 +14,9 @@ body {
 }
 
 .container {
-    max-width: 960px;
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 32px;
 }
 
 /* Navbar */
@@ -39,34 +39,34 @@ body {
 /* Hero */
 .hero {
     text-align: center;
-    padding: 48px 0 32px;
+    padding: 64px 0 40px;
 }
 
 .hero h1 {
-    font-size: 28px;
+    font-size: 34px;
     color: #1a1a2e;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 }
 
 .hero p {
     color: #666;
-    font-size: 16px;
+    font-size: 18px;
 }
 
 /* Card */
 .card {
     background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    padding: 24px;
-    margin-bottom: 24px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 32px;
+    margin-bottom: 28px;
 }
 
 .card h2 {
-    font-size: 18px;
+    font-size: 20px;
     color: #1a1a2e;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
     border-bottom: 1px solid #f0f2f5;
 }
 
@@ -93,10 +93,10 @@ body {
 .form-group input,
 .form-group select {
     width: 100%;
-    padding: 10px 12px;
+    padding: 12px 14px;
     border: 1px solid #dcdfe6;
     border-radius: 6px;
-    font-size: 14px;
+    font-size: 15px;
     transition: border-color 0.2s;
 }
 
@@ -172,8 +172,8 @@ body {
 /* File Dropzone */
 .file-dropzone {
     border: 2px dashed #dcdfe6;
-    border-radius: 8px;
-    padding: 40px 20px;
+    border-radius: 10px;
+    padding: 56px 20px;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s;
@@ -226,10 +226,10 @@ body {
 
 .btn {
     display: inline-block;
-    padding: 10px 24px;
+    padding: 12px 32px;
     border: none;
-    border-radius: 6px;
-    font-size: 15px;
+    border-radius: 8px;
+    font-size: 16px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
@@ -259,12 +259,12 @@ body {
 table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 14px;
+    font-size: 15px;
 }
 
 table th {
     background: #f5f7fa;
-    padding: 10px 12px;
+    padding: 14px 16px;
     text-align: left;
     font-weight: 600;
     color: #555;
@@ -273,7 +273,7 @@ table th {
 }
 
 table td {
-    padding: 10px 12px;
+    padding: 14px 16px;
     border-bottom: 1px solid #ebeef5;
 }
 

@@ -23,8 +23,6 @@ async def download_template():
     df = pd.DataFrame({
         "姓名": ["例：张三"],
         "成绩": ["优秀"],
-        "课堂表现": ["例：积极举手发言，思维活跃"],
-        "作业情况": ["例：按时完成，书写工整"],
     })
     buf = io.BytesIO()
     with pd.ExcelWriter(buf, engine="openpyxl") as writer:

@@ -7,7 +7,7 @@ import pandas as pd
 
 from backend.schemas import StudentData
 
-REQUIRED_COLUMNS = ["姓名", "成绩", "课堂表现", "作业情况"]
+REQUIRED_COLUMNS = ["姓名"]
 COLUMN_ALIASES = {
     "学生姓名": "姓名",
     "名字": "姓名",
@@ -58,9 +58,9 @@ class ExcelParser:
             students.append(
                 StudentData(
                     name=str(row["姓名"]).strip(),
-                    score=str(row["成绩"]).strip() if row["成绩"] is not None else None,
-                    performance=str(row["课堂表现"]).strip() if row["课堂表现"] is not None else None,
-                    homework=str(row["作业情况"]).strip() if row["作业情况"] is not None else None,
+                    score=str(row["成绩"]).strip() if row.get("成绩") is not None else None,
+                    performance=str(row["课堂表现"]).strip() if row.get("课堂表现") is not None else None,
+                    homework=str(row["作业情况"]).strip() if row.get("作业情况") is not None else None,
                 )
             )
 
@@ -85,9 +85,9 @@ class ExcelParser:
             students.append(
                 StudentData(
                     name=str(row["姓名"]).strip(),
-                    score=str(row["成绩"]).strip() if row["成绩"] is not None else None,
-                    performance=str(row["课堂表现"]).strip() if row["课堂表现"] is not None else None,
-                    homework=str(row["作业情况"]).strip() if row["作业情况"] is not None else None,
+                    score=str(row["成绩"]).strip() if row.get("成绩") is not None else None,
+                    performance=str(row["课堂表现"]).strip() if row.get("课堂表现") is not None else None,
+                    homework=str(row["作业情况"]).strip() if row.get("作业情况") is not None else None,
                 )
             )
 

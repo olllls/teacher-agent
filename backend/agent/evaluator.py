@@ -19,12 +19,11 @@ PROMPT_TEMPLATE = """你是一位有丰富教学经验的班主任，{style_desc
 学生信息：
 - 姓名：{name}
 - 成绩：{score}
-- 课堂表现：{performance}
-- 作业情况：{homework}
+{extra}
 
 要求：
 1. 先肯定学生的优点和进步，再委婉指出需要改进的地方
-2. 结合具体的课堂表现或作业情况来佐证评价
+{extra_requirements}
 3. 提出下学期可操作的改进建议，让学生知道怎么做
 4. 语气真诚温暖，用"你"来称呼学生
 5. 不得出现歧视性、贬低性词汇
@@ -66,8 +65,21 @@ class EvaluationService:
             style_desc = f"{style_desc}，{custom_prompt}"
 
         score_str = score if score else "未知"
-        performance_str = performance or "未记录"
-        homework_str = homework or "未记录"
+        performance_str = performance or None
+        homework_str = homework or None
+
+        extra_lines = []
+        if performance_str:
+            extra_lines.append(f"- 课堂表现：{performance_str}")
+        if homework_str:
+            extra_lines.append(f"- 作业情况：{homework_str}")
+        extra = "\n".join(extra_lines)
+
+        extra_requirements = ""
+        if performance_str or homework_str:
+            extra_requirements = "2. 结合学生的具体表现来佐证评价"
+        else:
+            extra_requirements = "2. 根据学生的成绩给出有针对性的评价"
 
         prompt = PROMPT_TEMPLATE.format(
             style_desc=style_desc,
@@ -75,8 +87,8 @@ class EvaluationService:
             max_words=max_words,
             name=name,
             score=score_str,
-            performance=performance_str,
-            homework=homework_str,
+            extra=extra,
+            extra_requirements=extra_requirements,
         )
 
         return await self._call_deepseek(prompt)

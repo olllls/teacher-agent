@@ -119,8 +119,6 @@ document.addEventListener("DOMContentLoaded", function () {
           <td>${i + 1}</td>
           <td>${escHtml(s.name)}</td>
           <td>${s.score !== null ? s.score : "-"}</td>
-          <td>${escHtml(s.performance || "-")}</td>
-          <td>${escHtml(s.homework || "-")}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -388,8 +386,6 @@ document.addEventListener("DOMContentLoaded", function () {
           <td>${i + 1}</td>
           <td>${escHtml(s.name)}</td>
           <td>${s.score !== null && s.score !== undefined ? s.score : "-"}</td>
-          <td>${escHtml(s.performance || "-")}</td>
-          <td>${escHtml(s.homework || "-")}</td>
           <td class="eval-cell">${contentPreview}</td>
           <td>${sensitiveHtml}</td>
           <td>

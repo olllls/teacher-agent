@@ -142,6 +142,12 @@ body {
     color: #fff;
 }
 
+.col-tag.optional {
+    background: #fff3e0;
+    color: #e65100;
+    border: 1px dashed #ffb74d;
+}
+
 /* Template Download */
 .template-download {
     margin-bottom: 12px;

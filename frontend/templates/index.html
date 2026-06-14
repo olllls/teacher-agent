@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}上传学生数据 - 教师评语助手{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>教师期末评语助手</h1>
+    <p>上传学生 Excel，一键生成个性化评语</p>
+</section>
+
+<section class="upload-section card">
+    <h2>第一步：上传学生数据</h2>
+    <form id="uploadForm" class="upload-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="class_name">班级名称 *</label>
+                <input type="text" id="class_name" name="class_name" required placeholder="如：三年级一班">
+            </div>
+            <div class="form-group">
+                <label for="grade">年级</label>
+                <input type="text" id="grade" name="grade" placeholder="如：三年级">
+            </div>
+            <div class="form-group">
+                <label for="semester">学期 *</label>
+                <select id="semester" name="semester" required>
+                    <option value="2025-2026-上">2025-2026 上学期</option>
+                    <option value="2025-2026-下">2025-2026 下学期</option>
+                    <option value="2026-2027-上" selected>2026-2027 上学期</option>
+                    <option value="2026-2027-下">2026-2027 下学期</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Excel 文件 *</label>
+            <div class="file-dropzone" id="dropzone">
+                <p>拖拽文件到此处，或点击选择文件</p>
+                <p class="file-hint">支持 .xlsx / .xls 格式</p>
+                <input type="file" id="fileInput" accept=".xlsx,.xls" hidden>
+            </div>
+            <div id="fileInfo" class="file-info hidden">
+                <span id="fileName"></span>
+                <button type="button" id="removeFile" class="btn-small">移除</button>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
+                上传并解析
+            </button>
+        </div>
+    </form>
+</section>
+
+<section id="previewSection" class="preview-section card hidden">
+    <h2>数据预览</h2>
+    <div class="preview-meta">
+        <span id="classInfo"></span>
+        <span id="studentCount"></span>
+    </div>
+    <div class="table-wrapper">
+        <table id="previewTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>姓名</th>
+                    <th>成绩</th>
+                    <th>课堂表现</th>
+                    <th>作业情况</th>
+                </tr>
+            </thead>
+            <tbody id="previewBody"></tbody>
+        </table>
+    </div>
+    <div class="form-actions">
+        <a href="/generate/{{ class_id }}" class="btn btn-primary" id="generateBtn">
+            下一步：生成评语 →
+        </a>
+    </div>
+</section>
+{% endblock %}

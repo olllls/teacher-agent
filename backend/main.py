@@ -1,11 +1,15 @@
 import os
 from contextlib import asynccontextmanager
+from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 from backend.config import settings
 from backend.database import init_db
+from backend.router import upload
 
 
 @asynccontextmanager
@@ -19,6 +23,14 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title=settings.app_name, lifespan=lifespan)
 
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
+app.include_router(upload.router)
+
+templates = Jinja2Templates(directory="frontend/templates")
+
+
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
 
 @app.get("/api/health")

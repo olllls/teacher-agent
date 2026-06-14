@@ -255,41 +255,11 @@ document.addEventListener("DOMContentLoaded", function () {
       progressCount.textContent = data.completed + " / " + data.total;
     }
 
-    function showResults(results) {
-      resultsBody.innerHTML = "";
-      progressText.textContent = "✅ 生成完成！";
-
-      results.forEach((r, i) => {
-        const hasSensitive = r.sensitive_hit > 0;
-        const sensitiveHtml = hasSensitive
-          ? '<span class="sensitive-badge">⚠️ 含敏感词</span>'
-          : '<span class="safe-badge">✅ 安全</span>';
-
-        const contentPreview = r.content.length > 120
-          ? escHtml(r.content.slice(0, 120)) + "..."
-          : escHtml(r.content);
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${i + 1}</td>
-          <td>${escHtml(r.name)}</td>
-          <td>${r.score !== null && r.score !== undefined ? r.score : "-"}</td>
-          <td>${escHtml(r.performance || "-")}</td>
-          <td>${escHtml(r.homework || "-")}</td>
-          <td class="eval-cell">${contentPreview}</td>
-          <td>${sensitiveHtml}</td>
-          <td>
-            <button class="btn-small btn-edit" data-student-id="${r.student_id}" data-content="${escHtml(r.content)}">
-              编辑
-            </button>
-          </td>
-        `;
-        resultsBody.appendChild(tr);
-      });
-
+    function showResults(_results) {
+      // Read from DB for consistent data
+      refreshResultsFromDb();
       resultsSection.classList.remove("hidden");
       resultsSection.scrollIntoView({ behavior: "smooth" });
-      bindEditButtons();
     }
 
     function showError(msg) {
@@ -350,7 +320,6 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("modalSave").addEventListener("click", async function () {
       if (!currentEditStudentId) return;
 
-      // Find eval_id from results table
       const content = document.getElementById("modalContent").value.trim();
       if (!content) {
         alert("评语不能为空");
@@ -358,6 +327,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       try {
+        // 1. Get eval_id from DB
         const resp = await fetch("/api/v1/classes/" + classId + "/evaluations");
         const data = await resp.json();
         const student = data.students.find(
@@ -369,6 +339,7 @@ document.addEventListener("DOMContentLoaded", function () {
           return;
         }
 
+        // 2. Save to DB
         const updateResp = await fetch(
           "/api/v1/evaluations/" + student.eval_id,
           {
@@ -377,19 +348,64 @@ document.addEventListener("DOMContentLoaded", function () {
             body: JSON.stringify({ content: content }),
           }
         );
-
         if (!updateResp.ok) throw new Error("保存失败");
 
-        // Refresh the results table
-        const genResp = await fetch("/api/v1/generate/" + taskId);
-        const genData = await genResp.json();
-        showResults(genData.results);
-
+        // 3. Refresh table from DB (not from in-memory task state)
+        await refreshResultsFromDb();
         closeModal();
       } catch (err) {
         alert("保存失败: " + err.message);
       }
     });
+
+    async function refreshResultsFromDb() {
+      try {
+        const resp = await fetch("/api/v1/classes/" + classId + "/evaluations");
+        const data = await resp.json();
+        renderResultsTable(data.students);
+      } catch (err) {
+        console.error("刷新失败", err);
+      }
+    }
+
+    function renderResultsTable(students) {
+      resultsBody.innerHTML = "";
+      progressText.textContent = "✅ 已完成";
+
+      students.forEach((s, i) => {
+        const hasSensitive = s.sensitive_hit > 0;
+        const sensitiveHtml = hasSensitive
+          ? '<span class="sensitive-badge">⚠️ 含敏感词</span>'
+          : '<span class="safe-badge">✅ 安全</span>';
+
+        const contentPreview = (s.content || "").length > 120
+          ? escHtml((s.content || "").slice(0, 120)) + "..."
+          : escHtml(s.content || "");
+
+        // Escape content for data attribute
+        const contentEscaped = escHtml(s.content || "").replace(/"/g, "&quot;");
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${escHtml(s.name)}</td>
+          <td>${s.score !== null && s.score !== undefined ? s.score : "-"}</td>
+          <td>${escHtml(s.performance || "-")}</td>
+          <td>${escHtml(s.homework || "-")}</td>
+          <td class="eval-cell">${contentPreview}</td>
+          <td>${sensitiveHtml}</td>
+          <td>
+            <button class="btn-small btn-edit" data-student-id="${s.student_id}" data-content="${contentEscaped}">
+              编辑
+            </button>
+          </td>
+        `;
+        resultsBody.appendChild(tr);
+      });
+
+      resultsSection.classList.remove("hidden");
+      bindEditButtons();
+    }
 
     // ============ Export ============
     exportBtn.addEventListener("click", async function () {

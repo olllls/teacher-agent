@@ -63,20 +63,27 @@ async def download_template():
         cell.alignment = Alignment(horizontal="center")
 
     instruction_fill = PatternFill(start_color="F0F9EB", fgColor="F0F9EB", fill_type="solid")
-    instruction_cell = ws.cell(row=4, column=1, value="说明：")
-    instruction_cell.font = Font(bold=True, size=10)
-    instruction_cell.fill = instruction_fill
 
+    # Put instructions on a separate sheet to avoid being read as data
+    ws2 = wb.create_sheet(title="使用说明")
     instructions = [
-        "• 蓝色标题 = 必填列，橙色标题 = 选填列",
-        "• 「成绩」支持分数(95)或等级(优秀/良好/及格/A/B)",
-        "• 「关键词」可简短描述学生特点，如：思维活跃、不够自信等",
-        "• 列名可使用同义词，系统会自动识别（如「分数」=「成绩」）",
+        ["使用说明"],
+        [""],
+        ["蓝色标题 = 必填列", "橙色标题 = 选填列"],
+        [""],
+        ["「成绩」支持分数(95)或等级(优秀/良好/及格/A/B)"],
+        ["「关键词」可简短描述学生特点，如：思维活跃、不够自信等"],
+        ["列名可使用同义词，系统会自动识别（如「分数」=「成绩」）"],
+        [""],
+        ["填写完成后，请上传「评语模板」工作表的数据。"],
     ]
-    for i, text in enumerate(instructions):
-        cell = ws.cell(row=5 + i, column=1, value=text)
-        cell.font = Font(color="666666", size=10)
-        cell.fill = instruction_fill
+    for i, row in enumerate(instructions, 1):
+        cell = ws2.cell(row=i, column=1, value=row[0] if row else "")
+        if i == 1:
+            cell.font = Font(bold=True, size=14)
+        elif i >= 5:
+            cell.font = Font(color="666666", size=10)
+    ws2.column_dimensions["A"].width = 60
 
     ws.column_dimensions["A"].width = 18
     ws.column_dimensions["B"].width = 18

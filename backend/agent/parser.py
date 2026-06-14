@@ -16,14 +16,19 @@ COLUMN_ALIASES = {
     "得分": "成绩",
     "期末成绩": "成绩",
     "考试成绩": "成绩",
+    "等级": "成绩",
+    "等第": "成绩",
+    "评价": "成绩",
     "课堂表现": "课堂表现",
     "上课表现": "课堂表现",
     "课上表现": "课堂表现",
     "纪律": "课堂表现",
+    "课堂": "课堂表现",
     "作业": "作业情况",
     "作业情况": "作业情况",
     "作业完成": "作业情况",
     "作业完成情况": "作业情况",
+    "作业质量": "作业情况",
 }
 
 
@@ -53,7 +58,7 @@ class ExcelParser:
             students.append(
                 StudentData(
                     name=str(row["姓名"]).strip(),
-                    score=float(row["成绩"]) if row["成绩"] is not None else None,
+                    score=str(row["成绩"]).strip() if row["成绩"] is not None else None,
                     performance=str(row["课堂表现"]).strip() if row["课堂表现"] is not None else None,
                     homework=str(row["作业情况"]).strip() if row["作业情况"] is not None else None,
                 )
@@ -80,7 +85,7 @@ class ExcelParser:
             students.append(
                 StudentData(
                     name=str(row["姓名"]).strip(),
-                    score=float(row["成绩"]) if row["成绩"] is not None else None,
+                    score=str(row["成绩"]).strip() if row["成绩"] is not None else None,
                     performance=str(row["课堂表现"]).strip() if row["课堂表现"] is not None else None,
                     homework=str(row["作业情况"]).strip() if row["作业情况"] is not None else None,
                 )

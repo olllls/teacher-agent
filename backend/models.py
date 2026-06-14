@@ -26,7 +26,7 @@ class StudentModel(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     class_id = Column(Integer, ForeignKey("classes.id"), nullable=False)
     name = Column(String(50), nullable=False)
-    score = Column(Float, comment="成绩")
+    score = Column(String(50), comment="成绩")
     performance = Column(Text, comment="课堂表现")
     homework = Column(Text, comment="作业情况")
     extra_info = Column(Text, comment="其他信息(JSON)")

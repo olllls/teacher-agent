@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 class StudentData(BaseModel):
     name: str
-    score: Optional[float] = None
+    score: Optional[str] = None
     performance: Optional[str] = None
     homework: Optional[str] = None
     extra_info: Optional[str] = None
@@ -30,7 +30,7 @@ class GenerateRequest(BaseModel):
 class EvaluationResult(BaseModel):
     student_id: int
     name: str
-    score: Optional[float] = None
+    score: Optional[str] = None
     performance: Optional[str] = None
     homework: Optional[str] = None
     content: str

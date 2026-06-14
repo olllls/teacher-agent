@@ -18,7 +18,7 @@ PROMPT_TEMPLATE = """你是一位有丰富教学经验的班主任，{style_desc
 
 学生信息：
 - 姓名：{name}
-- 期末成绩（百分制）：{score}
+- 成绩：{score}
 - 课堂表现：{performance}
 - 作业情况：{homework}
 
@@ -51,7 +51,7 @@ class EvaluationService:
     async def generate(
         self,
         name: str,
-        score: float | None = None,
+        score: str | None = None,
         performance: str | None = None,
         homework: str | None = None,
         style: str = "encourage",
@@ -65,7 +65,7 @@ class EvaluationService:
         if custom_prompt:
             style_desc = f"{style_desc}，{custom_prompt}"
 
-        score_str = f"{score}分" if score is not None else "未知"
+        score_str = score if score else "未知"
         performance_str = performance or "未记录"
         homework_str = homework or "未记录"
 

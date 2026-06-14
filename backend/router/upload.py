@@ -131,6 +131,7 @@ async def upload_excel(
         semester=datetime.now().strftime('%Y-%m'),
         style=settings.default_style,
         created_at=datetime.now(),
+        source_file=filepath,
     )
     db.add(class_)
     await db.flush()

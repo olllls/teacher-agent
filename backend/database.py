@@ -31,3 +31,8 @@ async def init_db():
         await conn.execute(text("PRAGMA busy_timeout=5000"))
         from backend.models import Base  # noqa: F401
         await conn.run_sync(Base.metadata.create_all)
+        # Migration: add source_file column if it doesn't exist yet
+        try:
+            await conn.execute(text("ALTER TABLE classes ADD COLUMN source_file VARCHAR(500)"))
+        except Exception:
+            pass

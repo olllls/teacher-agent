@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -12,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.agent.evaluator import EvaluationService, EvaluationError
 from backend.agent.sensitive import SensitiveChecker
 from backend.database import async_session, get_db
-from backend.models import EvaluationModel, StudentModel
+from backend.models import ClassModel, EvaluationModel, StudentModel
 from backend.schemas import (
     EvaluationResult,
     EvaluationUpdate,
@@ -226,3 +227,16 @@ async def _run_generation(task_id: str, students: list[StudentModel], req: Gener
         state.status = "completed"
     finally:
         await evaluator.close()
+
+    # Layer 1: delete uploaded file regardless of generation outcome
+    try:
+        async with async_session() as db:
+            result = await db.execute(
+                select(ClassModel).where(ClassModel.id == req.class_id)
+            )
+            class_ = result.scalar_one_or_none()
+            if class_ and class_.source_file and os.path.exists(class_.source_file):
+                os.remove(class_.source_file)
+                print(f"[INFO] Deleted upload file {os.path.basename(class_.source_file)}")
+    except Exception as e:
+        print(f"[WARN] Failed to cleanup upload file: {e}", file=sys.stderr, flush=True)

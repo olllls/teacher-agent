@@ -15,6 +15,7 @@ class ClassModel(Base):
     semester = Column(String(50), nullable=False, comment="学期")
     style = Column(String(50), default="encourage", comment="评语风格")
     custom_prompt = Column(Text, comment="自定义提示词")
+    source_file = Column(String(500), comment="上传的源文件路径")
     created_at = Column(DateTime, default=datetime.now)
 
     students = relationship("StudentModel", back_populates="class_", cascade="all, delete-orphan")

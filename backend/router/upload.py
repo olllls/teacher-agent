@@ -1,8 +1,11 @@
+import io
 import os
 import uuid
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+import pandas as pd
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,9 +13,28 @@ from backend.agent.parser import ExcelParser, ExcelParseError
 from backend.config import settings
 from backend.database import get_db
 from backend.models import ClassModel, StudentModel
-from backend.schemas import UploadResponse, StudentData
+from backend.schemas import UploadResponse
 
 router = APIRouter(prefix="/api/v1", tags=["upload"])
+
+
+@router.get("/template")
+async def download_template():
+    df = pd.DataFrame({
+        "姓名": ["例：张三"],
+        "成绩": [95],
+        "课堂表现": ["例：积极举手发言，思维活跃"],
+        "作业情况": ["例：按时完成，书写工整"],
+    })
+    buf = io.BytesIO()
+    with pd.ExcelWriter(buf, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False)
+    buf.seek(0)
+    return StreamingResponse(
+        buf,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=template.xlsx; filename*=utf-8''%E8%AF%84%E8%AF%AD%E6%A8%A1%E6%9D%BF.xlsx"},
+    )
 
 
 @router.post("/upload-excel", response_model=UploadResponse)

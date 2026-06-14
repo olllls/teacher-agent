@@ -142,6 +142,27 @@ body {
     color: #fff;
 }
 
+/* Template Download */
+.template-download {
+    margin-bottom: 12px;
+}
+
+.btn-template {
+    display: inline-block;
+    padding: 8px 16px;
+    border: 1px dashed #67c23a;
+    border-radius: 6px;
+    color: #67c23a;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.btn-template:hover {
+    background: #f0f9eb;
+    border-style: solid;
+}
+
 /* File Dropzone */
 .file-dropzone {
     border: 2px dashed #dcdfe6;

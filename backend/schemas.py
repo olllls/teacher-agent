@@ -30,6 +30,9 @@ class GenerateRequest(BaseModel):
 class EvaluationResult(BaseModel):
     student_id: int
     name: str
+    score: Optional[float] = None
+    performance: Optional[str] = None
+    homework: Optional[str] = None
     content: str
     sensitive_hit: int = 0
     sensitive_words: list[str] = []

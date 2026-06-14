@@ -146,7 +146,15 @@ async def _run_generation(task_id: str, students: list[StudentModel], req: Gener
     evaluator = EvaluationService()
 
     try:
+        student_ids = [s.id for s in students]
         async with async_session() as db:
+            # Delete existing evaluations for these students (raw delete to avoid autoflush issues)
+            await db.execute(
+                EvaluationModel.__table__.delete().where(
+                    EvaluationModel.student_id.in_(student_ids)
+                )
+            )
+
             for student in students:
                 content = await evaluator.generate(
                     name=student.name,
@@ -175,6 +183,9 @@ async def _run_generation(task_id: str, students: list[StudentModel], req: Gener
                 state.results.append(EvaluationResult(
                     student_id=student.id,
                     name=student.name,
+                    score=student.score,
+                    performance=student.performance,
+                    homework=student.homework,
                     content=content,
                     sensitive_hit=len(matches),
                     sensitive_words=sensitive_words_list,
@@ -187,8 +198,11 @@ async def _run_generation(task_id: str, students: list[StudentModel], req: Gener
         state.status = "failed"
         state.error = str(e)
     except Exception as e:
+        err_msg = f"生成过程异常: {e}"
         state.status = "failed"
-        state.error = f"生成过程异常: {e}"
+        state.error = err_msg
+        import sys
+        print(f"[BG ERROR] {err_msg}", file=sys.stderr, flush=True)
     else:
         state.status = "completed"
     finally:

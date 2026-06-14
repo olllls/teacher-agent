@@ -28,8 +28,7 @@ PROMPT_TEMPLATE = """你是一位有丰富教学经验的班主任，{style_desc
 3. 提出下学期可操作的改进建议，让学生知道怎么做
 4. 语气真诚温暖，用"你"来称呼学生
 5. 不得出现歧视性、贬低性词汇
-6. 评语中不要出现具体的学科名称（如语文、数学、英语等），用"各科""所有学科"代替
-    7. 请直接输出评语正文，不要加标题和署名"""
+{subj_restriction}6. 请直接输出评语正文，不要加标题和署名"""
 
 
 class EvaluationError(Exception):
@@ -112,6 +111,13 @@ class EvaluationService:
         else:
             extra_requirements = "2. 根据学生的成绩给出有针对性的评价"
 
+        subj_restriction = ""
+        if subjects_data:
+            subj_restriction = (
+                "6. 评语中不要出现具体的学科名称（如语文、数学、英语等），"
+                "用“各科”“所有学科”代替\n"
+            )
+
         prompt = PROMPT_TEMPLATE.format(
             style_desc=style_desc,
             min_words=min_words,
@@ -120,6 +126,7 @@ class EvaluationService:
             score=score_str,
             extra=extra,
             extra_requirements=extra_requirements,
+            subj_restriction=subj_restriction,
         )
 
         return await self._call_deepseek(prompt)

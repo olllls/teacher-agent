@@ -29,6 +29,7 @@ class StudentModel(Base):
     score = Column(String(50), comment="成绩")
     performance = Column(Text, comment="课堂表现")
     homework = Column(Text, comment="作业情况")
+    keywords = Column(String(200), comment="关键词")
     extra_info = Column(Text, comment="其他信息(JSON)")
 
     class_ = relationship("ClassModel", back_populates="students")

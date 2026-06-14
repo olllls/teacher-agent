@@ -29,6 +29,10 @@ COLUMN_ALIASES = {
     "作业完成": "作业情况",
     "作业完成情况": "作业情况",
     "作业质量": "作业情况",
+    "关键词": "关键词",
+    "标签": "关键词",
+    "特点": "关键词",
+    "关键字": "关键词",
 }
 
 
@@ -61,6 +65,7 @@ class ExcelParser:
                     score=str(row["成绩"]).strip() if row.get("成绩") is not None else None,
                     performance=str(row["课堂表现"]).strip() if row.get("课堂表现") is not None else None,
                     homework=str(row["作业情况"]).strip() if row.get("作业情况") is not None else None,
+                    keywords=str(row["关键词"]).strip() if row.get("关键词") is not None else None,
                 )
             )
 
@@ -88,6 +93,7 @@ class ExcelParser:
                     score=str(row["成绩"]).strip() if row.get("成绩") is not None else None,
                     performance=str(row["课堂表现"]).strip() if row.get("课堂表现") is not None else None,
                     homework=str(row["作业情况"]).strip() if row.get("作业情况") is not None else None,
+                    keywords=str(row["关键词"]).strip() if row.get("关键词") is not None else None,
                 )
             )
 

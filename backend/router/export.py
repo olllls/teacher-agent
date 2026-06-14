@@ -36,6 +36,7 @@ async def export_excel(req: ExportRequest, db: AsyncSession = Depends(get_db)):
             StudentModel.score,
             StudentModel.performance,
             StudentModel.homework,
+            StudentModel.keywords,
             EvaluationModel.content,
         )
         .outerjoin(EvaluationModel, EvaluationModel.student_id == StudentModel.id)
@@ -53,6 +54,7 @@ async def export_excel(req: ExportRequest, db: AsyncSession = Depends(get_db)):
             "成绩": row.score if row.score is not None else "",
             "课堂表现": row.performance or "",
             "作业情况": row.homework or "",
+            "关键词": row.keywords or "",
             "评语": row.content or "",
         })
 

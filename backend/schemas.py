@@ -9,6 +9,7 @@ class StudentData(BaseModel):
     score: Optional[str] = None
     performance: Optional[str] = None
     homework: Optional[str] = None
+    keywords: Optional[str] = None
     extra_info: Optional[str] = None
 
 
@@ -33,6 +34,7 @@ class EvaluationResult(BaseModel):
     score: Optional[str] = None
     performance: Optional[str] = None
     homework: Optional[str] = None
+    keywords: Optional[str] = None
     content: str
     sensitive_hit: int = 0
     sensitive_words: list[str] = []

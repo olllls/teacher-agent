@@ -386,6 +386,7 @@ document.addEventListener("DOMContentLoaded", function () {
           <td>${i + 1}</td>
           <td>${escHtml(s.name)}</td>
           <td>${s.score !== null && s.score !== undefined ? s.score : "-"}</td>
+          <td>${escHtml(s.keywords || "-")}</td>
           <td class="eval-cell">${contentPreview}</td>
           <td>${sensitiveHtml}</td>
           <td>

@@ -53,6 +53,7 @@ class EvaluationService:
         score: str | None = None,
         performance: str | None = None,
         homework: str | None = None,
+        keywords: str | None = None,
         style: str = "encourage",
         custom_prompt: str | None = None,
         word_count: str = "100-150",
@@ -67,16 +68,19 @@ class EvaluationService:
         score_str = score if score else "未知"
         performance_str = performance or None
         homework_str = homework or None
+        keywords_str = keywords or None
 
         extra_lines = []
         if performance_str:
             extra_lines.append(f"- 课堂表现：{performance_str}")
         if homework_str:
             extra_lines.append(f"- 作业情况：{homework_str}")
+        if keywords_str:
+            extra_lines.append(f"- 学生特点：{keywords_str}")
         extra = "\n".join(extra_lines)
 
         extra_requirements = ""
-        if performance_str or homework_str:
+        if extra_lines:
             extra_requirements = "2. 结合学生的具体表现来佐证评价"
         else:
             extra_requirements = "2. 根据学生的成绩给出有针对性的评价"

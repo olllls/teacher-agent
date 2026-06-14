@@ -18,9 +18,6 @@ router = APIRouter(prefix="/api/v1", tags=["upload"])
 @router.post("/upload-excel", response_model=UploadResponse)
 async def upload_excel(
     file: UploadFile = File(...),
-    class_name: str = Form(...),
-    grade: str = Form(""),
-    semester: str = Form(...),
     db: AsyncSession = Depends(get_db),
 ):
     if not file.filename or not file.filename.endswith((".xlsx", ".xls")):
@@ -43,9 +40,8 @@ async def upload_excel(
         raise HTTPException(status_code=400, detail=str(e))
 
     class_ = ClassModel(
-        name=class_name,
-        grade=grade or None,
-        semester=semester,
+        name=f"班级_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+        semester=datetime.now().strftime('%Y-%m'),
         style=settings.default_style,
         created_at=datetime.now(),
     )
@@ -66,7 +62,7 @@ async def upload_excel(
 
     return UploadResponse(
         class_id=class_.id,
-        class_name=class_name,
+        class_name=class_.name,
         total=len(all_students),
         preview=preview_students,
         columns=columns,

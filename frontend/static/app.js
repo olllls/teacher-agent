@@ -80,14 +80,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const formData = new FormData();
       formData.append("file", selectedFile);
-      formData.append("class_name", document.getElementById("class_name").value.trim());
-      formData.append("grade", document.getElementById("grade").value.trim());
-      formData.append("semester", document.getElementById("semester").value);
-
-      if (!formData.get("class_name")) {
-        alert("请填写班级名称");
-        return;
-      }
 
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<span class="spinner"></span> 上传中...';

@@ -232,6 +232,10 @@ table tr:hover td {
     display: none;
 }
 
+.modal.hidden {
+    display: none;
+}
+
 /* Loading */
 .loading {
     text-align: center;

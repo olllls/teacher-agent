@@ -305,15 +305,21 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(() => {});
 
       document.getElementById("modalStudent").textContent =
-        "学生ID: " + studentId;
-      document.getElementById("editModal").classList.remove("hidden");
+        "学生姓名: " + (document.querySelector(`.btn-edit[data-student-id="${studentId}"]`)?.closest('tr')?.querySelector('td:nth-child(2)')?.textContent || '');
+
+      // Show modal
+      const modal = document.getElementById("editModal");
+      modal.classList.remove("hidden");
+      modal.style.display = "flex";
     }
 
     document.getElementById("modalClose").addEventListener("click", closeModal);
     document.getElementById("modalCancel").addEventListener("click", closeModal);
 
     function closeModal() {
-      document.getElementById("editModal").classList.add("hidden");
+      const modal = document.getElementById("editModal");
+      modal.classList.add("hidden");
+      modal.style.display = "none";
       currentEditStudentId = null;
     }
 

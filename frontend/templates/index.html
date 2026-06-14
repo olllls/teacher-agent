@@ -13,6 +13,16 @@
     <form id="uploadForm" class="upload-form">
         <div class="form-group">
             <label>Excel 文件 *</label>
+            <div class="excel-requirements">
+                <p>Excel 需要包含以下列：</p>
+                <div class="column-tags">
+                    <span class="col-tag required">姓名</span>
+                    <span class="col-tag">成绩</span>
+                    <span class="col-tag">课堂表现</span>
+                    <span class="col-tag">作业情况</span>
+                </div>
+                <p class="file-hint">也可用「学生姓名」「分数」「上课表现」等 — 系统会自动识别</p>
+            </div>
             <div class="file-dropzone" id="dropzone">
                 <p>拖拽文件到此处，或点击选择文件</p>
                 <p class="file-hint">支持 .xlsx / .xls 格式</p>

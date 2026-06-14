@@ -49,6 +49,14 @@ async def start_generate(req: GenerateRequest, db: AsyncSession = Depends(get_db
     if not students:
         raise HTTPException(status_code=404, detail="该班级没有学生数据")
 
+    # Prevent duplicate generation for the same class
+    for t in _tasks.values():
+        if t.class_id == req.class_id and t.status == "processing":
+            raise HTTPException(
+                status_code=409,
+                detail="该班级正在生成评语中，请等待完成",
+            )
+
     task_id = f"gen-{uuid.uuid4().hex[:12]}"
     state = TaskState(
         task_id=task_id,
@@ -159,7 +167,7 @@ async def _run_generation(task_id: str, students: list[StudentModel], req: Gener
                 )
             )
 
-            for student in students:
+            for idx, student in enumerate(students):
                 content = await evaluator.generate(
                     name=student.name,
                     score=student.score,
@@ -198,6 +206,10 @@ async def _run_generation(task_id: str, students: list[StudentModel], req: Gener
                     sensitive_words=sensitive_words_list,
                 ))
                 state.completed += 1
+
+                # Incremental commit every 5 evaluations
+                if (idx + 1) % 5 == 0:
+                    await db.commit()
 
             await db.commit()
 

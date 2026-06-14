@@ -20,13 +20,72 @@ router = APIRouter(prefix="/api/v1", tags=["upload"])
 
 @router.get("/template")
 async def download_template():
-    df = pd.DataFrame({
-        "姓名": ["例：张三"],
-        "成绩": ["优秀"],
-    })
+    import openpyxl
+    from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "评语模板"
+
+    headers = [
+        ("姓名", True),
+        ("成绩", False),
+        ("课堂表现", False),
+        ("作业情况", False),
+        ("关键词", False),
+    ]
+    header_fill = PatternFill(start_color="409EFF", fgColor="409EFF", fill_type="solid")
+    optional_fill = PatternFill(start_color="E6A23C", fgColor="E6A23C", fill_type="solid")
+    header_font = Font(color="FFFFFF", bold=True, size=11)
+    example_font = Font(color="999999", italic=True)
+    thin_border = Border(
+        left=Side(style="thin", color="D0D0D0"),
+        right=Side(style="thin", color="D0D0D0"),
+        top=Side(style="thin", color="D0D0D0"),
+        bottom=Side(style="thin", color="D0D0D0"),
+    )
+
+    for col_idx, (label, required) in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_idx, value=label)
+        cell.fill = header_fill if required else optional_fill
+        cell.font = header_font
+        cell.alignment = Alignment(horizontal="center")
+        cell.border = thin_border
+
+        note = "必填" if required else "选填"
+        cell.comment = openpyxl.comments.Comment(note, "系统")
+
+    example = ["例：张三", "95 / 优秀", "例：积极举手发言", "例：按时完成", "例：思维活跃"]
+    for col_idx, val in enumerate(example, 1):
+        cell = ws.cell(row=2, column=col_idx, value=val)
+        cell.font = example_font
+        cell.border = thin_border
+        cell.alignment = Alignment(horizontal="center")
+
+    instruction_fill = PatternFill(start_color="F0F9EB", fgColor="F0F9EB", fill_type="solid")
+    instruction_cell = ws.cell(row=4, column=1, value="说明：")
+    instruction_cell.font = Font(bold=True, size=10)
+    instruction_cell.fill = instruction_fill
+
+    instructions = [
+        "• 蓝色标题 = 必填列，橙色标题 = 选填列",
+        "• 「成绩」支持分数(95)或等级(优秀/良好/及格/A/B)",
+        "• 「关键词」可简短描述学生特点，如：思维活跃、不够自信等",
+        "• 列名可使用同义词，系统会自动识别（如「分数」=「成绩」）",
+    ]
+    for i, text in enumerate(instructions):
+        cell = ws.cell(row=5 + i, column=1, value=text)
+        cell.font = Font(color="666666", size=10)
+        cell.fill = instruction_fill
+
+    ws.column_dimensions["A"].width = 18
+    ws.column_dimensions["B"].width = 18
+    ws.column_dimensions["C"].width = 28
+    ws.column_dimensions["D"].width = 28
+    ws.column_dimensions["E"].width = 28
+
     buf = io.BytesIO()
-    with pd.ExcelWriter(buf, engine="openpyxl") as writer:
-        df.to_excel(writer, index=False)
+    wb.save(buf)
     buf.seek(0)
     return StreamingResponse(
         buf,

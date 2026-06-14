@@ -1,5 +1,6 @@
 import os
 
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
@@ -26,5 +27,7 @@ async def get_db():
 
 async def init_db():
     async with engine.begin() as conn:
+        await conn.execute(text("PRAGMA journal_mode=WAL"))
+        await conn.execute(text("PRAGMA busy_timeout=5000"))
         from backend.models import Base  # noqa: F401
         await conn.run_sync(Base.metadata.create_all)

@@ -113,7 +113,8 @@ async def upload_excel(
     if len(content) > settings.max_upload_size:
         raise HTTPException(status_code=400, detail="文件大小超过 10MB 限制")
 
-    filename = f"{uuid.uuid4().hex}_{file.filename}"
+    safe_filename = os.path.basename(file.filename)
+    filename = f"{uuid.uuid4().hex}_{safe_filename}"
     filepath = os.path.join(settings.upload_dir, filename)
     with open(filepath, "wb") as f:
         f.write(content)

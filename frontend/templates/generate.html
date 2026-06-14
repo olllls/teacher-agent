@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}生成评语 - 教师评语助手{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h2>评语生成设置</h2>
+    <form id="generateForm">
+        <input type="hidden" id="classId" value="{{ class_id }}">
+
+        <div class="form-group">
+            <label>评语风格</label>
+            <select id="style" name="style" class="full-width">
+                <option value="encourage">🌱 鼓励型 — 以鼓励为主，语气温暖亲切</option>
+                <option value="moderate">⚖️ 客观型 — 客观中肯，既肯定也指出不足</option>
+                <option value="strict">📏 严格型 — 严格要求，高标准，语气正式</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="custom_prompt">自定义风格（可选）</label>
+            <input type="text" id="custom_prompt" name="custom_prompt"
+                   placeholder="如：我是一位严格的数学老师，注重逻辑思维培养"
+                   class="full-width">
+        </div>
+
+        <div class="form-group">
+            <label>评语字数</label>
+            <select id="wordCount" name="word_count" class="full-width">
+                <option value="50-100">50 - 100 字（简短）</option>
+                <option value="100-150" selected>100 - 150 字（标准）</option>
+                <option value="150-200">150 - 200 字（详细）</option>
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="startBtn">
+                🚀 开始生成评语
+            </button>
+        </div>
+    </form>
+</section>
+
+<section id="progressSection" class="card hidden">
+    <h2>生成进度</h2>
+    <div class="progress-bar-wrapper">
+        <div class="progress-bar" id="progressBar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        <div class="progress-info">
+            <span id="progressText">准备中...</span>
+            <span id="progressCount">0 / 0</span>
+        </div>
+    </div>
+    <div id="errorAlert" class="alert alert-error hidden"></div>
+</section>
+
+<section id="resultsSection" class="card hidden">
+    <div class="results-header">
+        <h2>评语预览</h2>
+        <div class="results-actions">
+            <button id="exportBtn" class="btn btn-primary">📥 导出 Excel</button>
+        </div>
+    </div>
+    <div class="table-wrapper">
+        <table id="resultsTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>姓名</th>
+                    <th>成绩</th>
+                    <th>评语</th>
+                    <th>敏感词</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="resultsBody"></tbody>
+        </table>
+    </div>
+    <div class="form-actions">
+        <a href="/" class="btn">← 返回首页</a>
+    </div>
+</section>
+
+<!-- Edit Modal -->
+<div id="editModal" class="modal hidden">
+    <div class="modal-content">
+        <span class="modal-close" id="modalClose">&times;</span>
+        <h3>编辑评语</h3>
+        <p class="modal-student" id="modalStudent"></p>
+        <textarea id="modalContent" rows="8"></textarea>
+        <div id="modalSensitive" class="sensitive-alert hidden"></div>
+        <div class="form-actions">
+            <button id="modalSave" class="btn btn-primary">保存修改</button>
+            <button id="modalCancel" class="btn">取消</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
